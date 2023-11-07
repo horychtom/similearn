@@ -5,7 +5,7 @@ with open("README.md", mode="r", encoding="utf-8") as readme_file:
 
 
 setup(
-    name="sentence-transformers",
+    name="similearn",
     version="2.2.2",
     author="Tomas Horych",
     author_email="t.horych@media-bias-research.org",
@@ -14,7 +14,7 @@ setup(
     long_description_content_type="text/markdown",
     license="Apache License 2.0",
     url="https://www.SBERT.net",
-    download_url="https://github.com/horychtom/sentence-transformers",
+    download_url="https://github.com/horychtom/similearn",
     packages=find_packages(),
     python_requires=">=3.6.0",
     install_requires=[

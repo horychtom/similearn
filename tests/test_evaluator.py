@@ -1,13 +1,13 @@
 """
 Tests the correct computation of evaluation scores from BinaryClassificationEvaluator
 """
-from sentence_transformers import SentenceTransformer, evaluation, losses, util
+from similearn import SentenceTransformer, evaluation, losses, util
 import unittest
 from sklearn.metrics import f1_score, accuracy_score
 import numpy as np
 import gzip
 import csv
-from sentence_transformers import InputExample
+from similearn import InputExample
 from torch.utils.data import DataLoader
 import os
 

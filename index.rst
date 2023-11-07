@@ -15,7 +15,7 @@ You can install it using pip:
 
 .. code-block:: python
 
-   pip install -U sentence-transformers
+   pip install -U similearn
 
 
 We recommend **Python 3.6** or higher, and at least **PyTorch 1.6.0**. See `installation <docs/installation.html>`_ for further installation options, especially if you want to use a GPU.
@@ -28,7 +28,7 @@ The usage is as simple as:
 
 .. code-block:: python
 
-    from sentence_transformers import SentenceTransformer
+    from similearn import SentenceTransformer
     model = SentenceTransformer('all-MiniLM-L6-v2')
 
     #Our sentences we like to encode

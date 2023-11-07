@@ -12,7 +12,7 @@ wandb/*
 tmp_*.py
 /examples/**/output/*
 examples/datasets/*/
-sentence_transformers.egg-info
+similearn.egg-info
 dist/
 nr_*/
 /examples/datasets/

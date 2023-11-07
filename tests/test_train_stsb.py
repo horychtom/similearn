@@ -8,15 +8,15 @@ import unittest
 
 from torch.utils.data import DataLoader
 
-from sentence_transformers import (
+from similearn import (
     SentenceTransformer,
     SentencesDataset,
     losses,
     models,
     util,
 )
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
-from sentence_transformers.readers import InputExample
+from similearn.evaluation import EmbeddingSimilarityEvaluator
+from similearn.readers import InputExample
 
 
 class PretrainedSTSbTest(unittest.TestCase):

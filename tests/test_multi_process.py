@@ -4,7 +4,7 @@ Computes embeddings
 
 
 import unittest
-from sentence_transformers import SentenceTransformer
+from similearn import SentenceTransformer
 import numpy as np
 
 

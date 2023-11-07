@@ -1,5 +1,5 @@
-from sentence_transformers.wandb_.wandb_client import WandbClient
-from sentence_transformers.SentenceTransformer import SentenceTransformer
+from similearn.wandb_.wandb_client import WandbClient
+from similearn.SentenceTransformer import SentenceTransformer
 
 
 # Load the dataset

@@ -1,13 +1,13 @@
-from sentence_transformers.readers import InputExample
-from sentence_transformers.losses import MultipleNegativesRankingLoss
-from sentence_transformers.wandb_ import WandbClient
-from sentence_transformers.evaluation import (
+from similearn.readers import InputExample
+from similearn.losses import MultipleNegativesRankingLoss
+from similearn.wandb_ import WandbClient
+from similearn.evaluation import (
     MultipleNegativesRankingLossEvaluator,
 )
 import pandas as pd
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from sentence_transformers import SentenceTransformer
+from similearn import SentenceTransformer
 import logging
 
 logger = logging.getLogger(__name__)

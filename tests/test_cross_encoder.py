@@ -7,9 +7,9 @@ import os
 import unittest
 
 from torch.utils.data import DataLoader
-from sentence_transformers import CrossEncoder, util
-from sentence_transformers.readers import InputExample
-from sentence_transformers.cross_encoder.evaluation import (
+from similearn import CrossEncoder, util
+from similearn.readers import InputExample
+from similearn.cross_encoder.evaluation import (
     CECorrelationEvaluator,
 )
 
