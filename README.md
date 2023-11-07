@@ -1,2 +1,2 @@
 # similearn
-A framework for training embedding models based on open-source sentence-transformer library. 
+A framework for training embedding models based on open-source sentence-transformer library.

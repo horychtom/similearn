@@ -1,0 +1,16 @@
+transformers>=4.6.0,<5.0.0
+tokenizers>=0.10.3
+tqdm
+torch>=2.0.0
+torchvision
+numpy
+scikit-learn
+scipy
+nltk
+sentencepiece
+huggingface-hub
+peft
+bitsandbytes
+wandb
+python-dotenv
+pathlib
