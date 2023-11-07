@@ -30,7 +30,6 @@ from .util import (
     snapshot_download,
 )
 from .models import Pooling, Transformer
-from .model_card_templates import ModelCardTemplate
 from . import __version__
 
 logger = logging.getLogger(__name__)
@@ -602,88 +601,6 @@ class SentenceTransformer(nn.Sequential):
         if create_model_card:
             self._create_model_card(path, model_name, train_datasets)
 
-    def _create_model_card(
-        self,
-        path: str,
-        model_name: Optional[str] = None,
-        train_datasets: Optional[List[str]] = None,
-    ):
-        """
-        Create an automatic model and stores it in path
-        """
-        if (
-            self._model_card_text is not None
-            and len(self._model_card_text) > 0
-        ):
-            model_card = self._model_card_text
-        else:
-            tags = ModelCardTemplate.__TAGS__.copy()
-            model_card = ModelCardTemplate.__MODEL_CARD__
-
-            if (
-                len(self._modules) == 2
-                and isinstance(self._first_module(), Transformer)
-                and isinstance(self._last_module(), Pooling)
-                and self._last_module().get_pooling_mode_str()
-                in ["cls", "max", "mean"]
-            ):
-                pooling_module = self._last_module()
-                pooling_mode = pooling_module.get_pooling_mode_str()
-                model_card = model_card.replace(
-                    "{USAGE_TRANSFORMERS_SECTION}",
-                    ModelCardTemplate.__USAGE_TRANSFORMERS__,
-                )
-                (
-                    pooling_fct_name,
-                    pooling_fct,
-                ) = ModelCardTemplate.model_card_get_pooling_function(
-                    pooling_mode,
-                )
-                model_card = (
-                    model_card.replace("{POOLING_FUNCTION}", pooling_fct)
-                    .replace("{POOLING_FUNCTION_NAME}", pooling_fct_name)
-                    .replace("{POOLING_MODE}", pooling_mode)
-                )
-                tags.append("transformers")
-
-            # Print full model
-            model_card = model_card.replace("{FULL_MODEL_STR}", str(self))
-
-            # Add tags
-            model_card = model_card.replace(
-                "{TAGS}",
-                "\n".join(["- " + t for t in tags]),
-            )
-
-            datasets_str = ""
-            if train_datasets is not None:
-                datasets_str = "datasets:\n" + "\n".join(
-                    ["- " + d for d in train_datasets],
-                )
-            model_card = model_card.replace("{DATASETS}", datasets_str)
-
-            # Add dim info
-            self._model_card_vars[
-                "{NUM_DIMENSIONS}"
-            ] = self.get_sentence_embedding_dimension()
-
-            # Replace vars we created while using the model
-            for name, value in self._model_card_vars.items():
-                model_card = model_card.replace(name, str(value))
-
-            # Replace remaining vars with default values
-            for name, value in ModelCardTemplate.__DEFAULT_VARS__.items():
-                model_card = model_card.replace(name, str(value))
-
-        if model_name is not None:
-            model_card = model_card.replace("{MODEL_NAME}", model_name.strip())
-
-        with open(
-            os.path.join(path, "README.md"),
-            "w",
-            encoding="utf8",
-        ) as fOut:
-            fOut.write(model_card.strip())
 
     def save_to_hub(
         self,
@@ -905,16 +822,6 @@ class SentenceTransformer(nn.Sequential):
         :param checkpoint_save_total_limit: Total number of checkpoints to store
         """
 
-        ##Add info to model card
-        # info_loss_functions = "\n".join(["- {} with {} training examples".format(str(loss), len(dataloader)) for dataloader, loss in train_objectives])
-        info_loss_functions = []
-        for dataloader, loss in train_objectives:
-            info_loss_functions.extend(
-                ModelCardTemplate.get_train_objective_info(dataloader, loss),
-            )
-        info_loss_functions = "\n\n".join(
-            [text for text in info_loss_functions],
-        )
 
         info_fit_parameters = json.dumps(
             {
@@ -931,16 +838,6 @@ class SentenceTransformer(nn.Sequential):
             },
             indent=4,
             sort_keys=True,
-        )
-        self._model_card_text = None
-        self._model_card_vars[
-            "{TRAINING_SECTION}"
-        ] = ModelCardTemplate.__TRAINING_SECTION__.replace(
-            "{LOSS_FUNCTIONS}",
-            info_loss_functions,
-        ).replace(
-            "{FIT_PARAMETERS}",
-            info_fit_parameters,
         )
 
         if use_amp:
@@ -1279,7 +1176,9 @@ class SentenceTransformer(nn.Sequential):
             modules_config = json.load(fIn)
 
         modules = OrderedDict()
+        
         for module_config in modules_config:
+            print(module_config["type"])
             module_class = import_from_string(module_config["type"])
             module = module_class.load(
                 os.path.join(model_path, module_config["path"]),
