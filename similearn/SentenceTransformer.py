@@ -1075,7 +1075,7 @@ class SentenceTransformer(nn.Sequential):
                 epoch=epoch,
                 steps=steps,
             )
-            self.wandbc.log({"dev_loss": score})
+            self.wandbc.run.log({"dev_loss": score})
             if callback is not None:
                 callback(score, epoch, steps)
             if score > self.best_score:
