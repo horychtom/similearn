@@ -32,7 +32,7 @@ class InformationRetrievalEvaluator(SentenceEvaluator):
         accuracy_at_k: List[int] = [1, 3, 5, 10],
         precision_recall_at_k: List[int] = [1, 3, 5, 10],
         map_at_k: List[int] = [100],
-        show_progress_bar: bool = False,
+        show_progress_bar: bool = True,
         batch_size: int = 32,
         name: str = "",
         write_csv: bool = True,
@@ -215,7 +215,7 @@ class InformationRetrievalEvaluator(SentenceEvaluator):
             if corpus_embeddings is None:
                 sub_corpus_embeddings = corpus_model.encode(
                     self.corpus[corpus_start_idx:corpus_end_idx],
-                    show_progress_bar=False,
+                    show_progress_bar=self.show_progress_bar,
                     batch_size=self.batch_size,
                     convert_to_tensor=True,
                 )
@@ -279,7 +279,7 @@ class InformationRetrievalEvaluator(SentenceEvaluator):
         logger.info("Queries: {}".format(len(self.queries)))
         logger.info("Corpus: {}\n".format(len(self.corpus)))
 
-        # Compute scores
+        # Compute final metrics
         scores = {
             name: self.compute_metrics(queries_result_list[name])
             for name in self.score_functions

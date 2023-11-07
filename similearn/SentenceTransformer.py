@@ -1178,7 +1178,7 @@ class SentenceTransformer(nn.Sequential):
         modules = OrderedDict()
         
         for module_config in modules_config:
-            print(module_config["type"])
+            module_config["type"] = module_config["type"].replace('sentence_transformers','similearn')
             module_class = import_from_string(module_config["type"])
             module = module_class.load(
                 os.path.join(model_path, module_config["path"]),
