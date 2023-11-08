@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from similearn import SentenceTransformer
 import logging
 import pickle
-from peft import get_peft_model, LoraConfig
+#from peft import get_peft_model, LoraConfig
 logger = logging.getLogger(__name__)
 
 
@@ -23,8 +23,8 @@ wandbc = WandbClient(run_name=run_name)
 model = SentenceTransformer(model_name, wandbc=wandbc)
 
 # load datasets from wandb
-train_dataset = pd.read_csv(wandbc.load_dataset("zbmath_train"))[:20]
-dev_dataset = pd.read_csv(wandbc.load_dataset("zbmath_dev"))[:20]
+train_dataset = pd.read_csv(wandbc.load_dataset("zbmath_train"))
+dev_dataset = pd.read_csv(wandbc.load_dataset("zbmath_dev"))
 
 train_examples = []
 dev_examples = []
@@ -36,20 +36,20 @@ for i, row in tqdm(train_dataset.iterrows(), total=len(train_dataset)):
 for i, row in tqdm(dev_dataset.iterrows(), total=len(dev_dataset)):
     dev_examples.append(InputExample(texts=[row["text_x"], row["text_y"]]))
 
-train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=2)
-dev_dataloader = DataLoader(dev_examples, shuffle=True, batch_size=2)
+train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)
+dev_dataloader = DataLoader(dev_examples, shuffle=True, batch_size=16)
 
 train_loss = MultipleNegativesRankingLoss(model=model)
 
-peft_config = LoraConfig(
-    lora_alpha=16,
-    lora_dropout=0.1,
-    r=4,
-    target_modules=["query","key","value"]
-)
-train_loss = get_peft_model(train_loss,peft_config=peft_config)
+# peft_config = LoraConfig(
+#     lora_alpha=16,
+#     lora_dropout=0.1,
+#     r=4,
+#     target_modules=["query","key","value"]
+# )
+# train_loss = get_peft_model(train_loss,peft_config=peft_config)
 
-evaluator = MultipleNegativesRankingLossEvaluator(dev_dataloader)
+# evaluator = MultipleNegativesRankingLossEvaluator(dev_dataloader)
 
 with open(wandbc.load_dataset("queries"), 'rb') as file:
     queries = pickle.load(file)
@@ -66,10 +66,10 @@ evaluator = InformationRetrievalEvaluator(queries=queries,corpus=corpus,relevant
 training_args = {
     "epochs": 1,
     "scheduler": "WarmupLinear",
-    "warmup_steps": 500,
+    "warmup_steps": 100,
     "evaluator": evaluator,
-    "evaluation_steps": 2,
-    "checkpoint_save_steps": 200,
+    "evaluation_steps": 100,
+    "checkpoint_save_steps": 500,
     "checkpoint_save_total_limit": 3,
 }
 

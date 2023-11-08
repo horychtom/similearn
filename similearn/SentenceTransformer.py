@@ -597,9 +597,6 @@ class SentenceTransformer(nn.Sequential):
         with open(os.path.join(path, "modules.json"), "w") as fOut:
             json.dump(modules_config, fOut, indent=2)
 
-        # Create model card
-        if create_model_card:
-            self._create_model_card(path, model_name, train_datasets)
 
 
     def save_to_hub(
