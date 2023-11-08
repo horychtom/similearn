@@ -11,12 +11,12 @@ from torch.utils.data import DataLoader
 from similearn import SentenceTransformer
 import logging
 import pickle
-#from peft import get_peft_model, LoraConfig
+from peft import get_peft_model, LoraConfig
 logger = logging.getLogger(__name__)
 
 
 # Load the dataset
-model_name = "bert-base-cased"
+model_name = "thenlper/gte-base"
 run_name = model_name.split("/")[-1] + "-fine-tuning"
 wandbc = WandbClient(run_name=run_name)
 
@@ -36,20 +36,18 @@ for i, row in tqdm(train_dataset.iterrows(), total=len(train_dataset)):
 for i, row in tqdm(dev_dataset.iterrows(), total=len(dev_dataset)):
     dev_examples.append(InputExample(texts=[row["text_x"], row["text_y"]]))
 
-train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)
-dev_dataloader = DataLoader(dev_examples, shuffle=True, batch_size=16)
+train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=32)
+dev_dataloader = DataLoader(dev_examples, shuffle=True, batch_size=32)
 
 train_loss = MultipleNegativesRankingLoss(model=model)
 
-# peft_config = LoraConfig(
-#     lora_alpha=16,
-#     lora_dropout=0.1,
-#     r=4,
-#     target_modules=["query","key","value"]
-# )
-# train_loss = get_peft_model(train_loss,peft_config=peft_config)
-
-# evaluator = MultipleNegativesRankingLossEvaluator(dev_dataloader)
+peft_config = LoraConfig(
+    lora_alpha=16,
+    lora_dropout=0.1,
+    r=4,
+    target_modules=["query","key","value"]
+)
+train_loss = get_peft_model(train_loss,peft_config=peft_config)
 
 with open(wandbc.load_dataset("queries"), 'rb') as file:
     queries = pickle.load(file)
