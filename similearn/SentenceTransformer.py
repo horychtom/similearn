@@ -1039,19 +1039,6 @@ class SentenceTransformer(nn.Sequential):
                 global_step,
             )
 
-    def evaluate(self, evaluator: SentenceEvaluator, output_path: str = None):
-        """
-        Evaluate the model
-
-        :param evaluator:
-            the evaluator
-        :param output_path:
-            the evaluator can write the results to this path
-        """
-        if output_path is not None:
-            os.makedirs(output_path, exist_ok=True)
-        return evaluator(self, output_path)
-
     def _eval_during_training(
         self,
         evaluator,
@@ -1071,7 +1058,6 @@ class SentenceTransformer(nn.Sequential):
         if evaluator is not None:
             score = evaluator(
                 self,
-                output_path=eval_path,
                 epoch=epoch,
                 steps=steps,
             )

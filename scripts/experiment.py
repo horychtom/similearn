@@ -11,12 +11,12 @@ from torch.utils.data import DataLoader
 from similearn import SentenceTransformer
 import logging
 import pickle
-
+from peft import get_peft_model, LoraConfig
 logger = logging.getLogger(__name__)
 
 
 # Load the dataset
-model_name = "roberta-base"
+model_name = "bert-base-cased"
 run_name = model_name.split("/")[-1] + "-fine-tuning"
 wandbc = WandbClient(run_name=run_name)
 
@@ -40,6 +40,15 @@ train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=2)
 dev_dataloader = DataLoader(dev_examples, shuffle=True, batch_size=2)
 
 train_loss = MultipleNegativesRankingLoss(model=model)
+
+peft_config = LoraConfig(
+    lora_alpha=16,
+    lora_dropout=0.1,
+    r=4,
+    target_modules=["query","key","value"]
+)
+train_loss = get_peft_model(train_loss,peft_config=peft_config)
+
 evaluator = MultipleNegativesRankingLossEvaluator(dev_dataloader)
 
 with open(wandbc.load_dataset("queries"), 'rb') as file:
@@ -52,7 +61,7 @@ with open(wandbc.load_dataset("relevant_docs"), 'rb') as file:
     relevant_docs = pickle.load(file)
 
 
-evaluator = InformationRetrievalEvaluator(queries=queries,corpus=corpus,relevant_docs=relevant_docs)
+evaluator = InformationRetrievalEvaluator(queries=queries,corpus=corpus,relevant_docs=relevant_docs,wandbc=wandbc)
 
 training_args = {
     "epochs": 1,
