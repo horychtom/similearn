@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 # Load the dataset
-model_name = "roberta-base"
+model_name = "BAAI/bge-base-en-v1.5"
 run_name = model_name.split("/")[-1] + "-fine-tuning"
 wandbc = WandbClient(run_name=run_name)
 
@@ -54,11 +54,11 @@ with open(wandbc.load_dataset("relevant_docs"), 'rb') as file:
 evaluator = InformationRetrievalEvaluator(queries=queries,corpus=corpus,relevant_docs=relevant_docs,wandbc=wandbc)
 
 training_args = {
-    "epochs": 2,
+    "epochs": 3,
     "scheduler": "WarmupLinear",
-    "warmup_steps": 100,
+    "warmup_steps": 500,
     "evaluator": evaluator,
-    "evaluation_steps": 200,
+    "evaluation_steps": 1000,
     "checkpoint_save_steps": 1000,
     "checkpoint_save_total_limit": 3,
 }
@@ -67,15 +67,15 @@ logger.info("Starting training...")
 model.fit(train_objectives=[(train_dataloader, train_loss)], **training_args)
 
 
-logging.info("Uploading model...")
-base_model = train_loss.model[0].auto_model
-tokenizer = train_loss.model.tokenizer
+# logging.info("Uploading model...")
+# base_model = train_loss.model[0].auto_model
+# tokenizer = train_loss.model.tokenizer
 
-base_model.push_to_hub(
-    "horychtom/" + model_name.split("/")[-1] + "-zbmath-open",
-)
-tokenizer.push_to_hub(
-    "horychtom/" + model_name.split("/")[-1] + "-zbmath-open",
-)
+# base_model.push_to_hub(
+#     "horychtom/" + model_name.split("/")[-1] + "-zbmath-open",
+# )
+# tokenizer.push_to_hub(
+#     "horychtom/" + model_name.split("/")[-1] + "-zbmath-open",
+# )
 
 wandbc.finish()

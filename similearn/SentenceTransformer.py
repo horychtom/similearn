@@ -225,6 +225,7 @@ class SentenceTransformer(nn.Sequential):
             logger.info("Use pytorch device: {}".format(device))
 
         self._target_device = torch.device(device)
+        self.model_path = model_path
 
     def encode(
         self,
@@ -920,7 +921,7 @@ class SentenceTransformer(nn.Sequential):
                 loss_model.zero_grad()
                 loss_model.train()
 
-            for _ in trange(
+            for epoch in trange(
                 steps_per_epoch,
                 desc="Iteration",
                 smoothing=0.05,
@@ -1023,6 +1024,15 @@ class SentenceTransformer(nn.Sequential):
                 -1,
                 callback,
             )
+
+            # push to hub
+            logging.info("Uploading model...")
+            base_model = self[0].auto_model
+            tokenizer = self.tokenizer
+
+            base_model.push_to_hub(f"horychtom/{self.model_path.split('/')[-1]}-zbmath-open-{epoch}")
+            tokenizer.push_to_hub(f"horychtom/{self.model_path.split('/')[-1]}-zbmath-open-{epoch}")
+
 
         if (
             evaluator is None and output_path is not None
