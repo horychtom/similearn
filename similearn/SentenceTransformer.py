@@ -921,7 +921,7 @@ class SentenceTransformer(nn.Sequential):
                 loss_model.zero_grad()
                 loss_model.train()
 
-            for epoch in trange(
+            for _ in trange(
                 steps_per_epoch,
                 desc="Iteration",
                 smoothing=0.05,
