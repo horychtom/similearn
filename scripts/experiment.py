@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 # Load the dataset
-model_name = "BAAI/bge-base-en-v1.5"
+model_name = "BAAI/llm-embedder"
 run_name = model_name.split("/")[-1] + "-fine-tuning"
 wandbc = WandbClient(run_name=run_name)
 
@@ -54,7 +54,7 @@ with open(wandbc.load_dataset("relevant_docs"), 'rb') as file:
 evaluator = InformationRetrievalEvaluator(queries=queries,corpus=corpus,relevant_docs=relevant_docs,wandbc=wandbc)
 
 training_args = {
-    "epochs": 3,
+    "epochs": 10,
     "scheduler": "WarmupLinear",
     "warmup_steps": 500,
     "evaluator": evaluator,
