@@ -598,8 +598,6 @@ class SentenceTransformer(nn.Sequential):
         with open(os.path.join(path, "modules.json"), "w") as fOut:
             json.dump(modules_config, fOut, indent=2)
 
-
-
     def save_to_hub(
         self,
         repo_name: str,
@@ -820,7 +818,6 @@ class SentenceTransformer(nn.Sequential):
         :param checkpoint_save_total_limit: Total number of checkpoints to store
         """
 
-
         info_fit_parameters = json.dumps(
             {
                 "evaluator": fullname(evaluator),
@@ -1030,9 +1027,12 @@ class SentenceTransformer(nn.Sequential):
             base_model = self[0].auto_model
             tokenizer = self.tokenizer
 
-            base_model.push_to_hub(f"horychtom/{self.model_path.split('/')[-1]}-zbmath-open-{epoch}")
-            tokenizer.push_to_hub(f"horychtom/{self.model_path.split('/')[-1]}-zbmath-open-{epoch}")
-
+            base_model.push_to_hub(
+                f"horychtom/{self.model_path.split('/')[-1]}-zbmath-open-{epoch}"
+            )
+            tokenizer.push_to_hub(
+                f"horychtom/{self.model_path.split('/')[-1]}-zbmath-open-{epoch}"
+            )
 
         if (
             evaluator is None and output_path is not None
@@ -1116,9 +1116,7 @@ class SentenceTransformer(nn.Sequential):
                 model_name_or_path,
             ),
         )
-        transformer_model = Transformer(
-            model_name_or_path, max_seq_length=512
-        )
+        transformer_model = Transformer(model_name_or_path, max_seq_length=512)
         pooling_model = Pooling(
             transformer_model.get_word_embedding_dimension(),
             "mean",
@@ -1140,16 +1138,13 @@ class SentenceTransformer(nn.Sequential):
 
             if (
                 "__version__" in self._model_config
-                and "similearn"
-                in self._model_config["__version__"]
+                and "similearn" in self._model_config["__version__"]
                 and self._model_config["__version__"]["similearn"]
                 > __version__
             ):
                 logger.warning(
                     "You try to use a model that was created with version {}, however, your version is {}. This might cause unexpected behavior or errors. In that case, try to update to the latest version.\n\n\n".format(
-                        self._model_config["__version__"][
-                            "similearn"
-                        ],
+                        self._model_config["__version__"]["similearn"],
                         __version__,
                     ),
                 )
@@ -1169,9 +1164,11 @@ class SentenceTransformer(nn.Sequential):
             modules_config = json.load(fIn)
 
         modules = OrderedDict()
-        
+
         for module_config in modules_config:
-            module_config["type"] = module_config["type"].replace('sentence_transformers','similearn')
+            module_config["type"] = module_config["type"].replace(
+                "sentence_transformers", "similearn"
+            )
             module_class = import_from_string(module_config["type"])
             module = module_class.load(
                 os.path.join(model_path, module_config["path"]),

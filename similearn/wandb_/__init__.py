@@ -7,7 +7,7 @@ from .wandb_client import WandbClient
 import logging
 from .logger_formatter import CustomFormatter
 
-wandb.login(key=WANDB_API_KEY)
+wandb.login(key=WANDB_API_KEY,relogin=True)
 huggingface_hub.login(HF_TOKEN)
 
 logger = logging.getLogger(__name__)
