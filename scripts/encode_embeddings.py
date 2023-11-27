@@ -9,6 +9,7 @@ from tqdm import tqdm
 multiple_gpus = False
 
 # load model
+print("Loading the model...")
 model_name = "BAAI/llm-embedder"
 encoder = embedder(model_name)
 
@@ -20,6 +21,7 @@ wandbc = WandbClient(run_name=run_name)
 
 # load datasets from wandb
 corpus = pd.read_parquet(wandbc.load_dataset("retrieval_corpus"))
+corpus.reset_index(inplace=True, drop=True)
 gold = pd.read_parquet(wandbc.load_dataset("gold_dataset"))
 
 
@@ -34,11 +36,14 @@ if multiple_gpus:
     encoded_corpus = encoder.encode_multi_process(
         corpus["text"], pool=pool, batch_size=64
     )
+
+print("Encoding the corpus...")
 encoded_corpus = encoder.encode(
     corpus["text"], batch_size=32, show_progress_bar=True
 )
 
 # index corpus
+print("Indexing the corpus...")
 vector_dimension = encoded_corpus.shape[1]
 index = faiss.IndexFlatL2(vector_dimension)
 faiss.normalize_L2(encoded_corpus)
@@ -59,7 +64,7 @@ def get_list_of_ids(ann, lookup):
 
     return anns_ids
 
-
+print("Evaluating...")
 id_lookup = corpus["id"]
 f1s = []
 for idx, row in tqdm(gold.iterrows()):
