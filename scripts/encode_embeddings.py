@@ -34,7 +34,7 @@ if multiple_gpus:
     encoded_corpus = encoder.encode_multi_process(
         corpus["text"], pool=pool, batch_size=64
     )
-encoded_corpus = encoder.encoder(
+encoded_corpus = encoder.encode(
     corpus["text"], batch_size=32, show_progress_bar=True
 )
 
